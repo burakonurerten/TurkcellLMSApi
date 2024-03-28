@@ -1,7 +1,9 @@
 package com.turkcell.spring.intro.controllers;
 
+import com.turkcell.spring.intro.dtos.BookDTO;
 import com.turkcell.spring.intro.entities.Book;
 import com.turkcell.spring.intro.repositories.BookRepository;
+import com.turkcell.spring.intro.services.abstracts.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -12,36 +14,30 @@ import java.util.*;
 @RequestMapping("/api/books")
 @RequiredArgsConstructor
 public class BookController {
-    private final BookRepository bookRepository;
+    private final BookService bookService;
 
     @GetMapping("/getById/{id}")
-    public ResponseEntity<Book> getById(@PathVariable int id){
-        Book book = bookRepository.findById(id).orElse(null);
-    
-        if (book == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-        else
-            return new ResponseEntity<>(book, HttpStatus.OK);
+    public Book getById(@PathVariable int id){
+        return bookService.getById(id);
     }
     
     @PutMapping("/update")
-    public Book updateBook(@RequestBody Book newBook){
-        return new ResponseEntity<>(bookRepository.save(newBook), HttpStatus.OK).getBody();
+    public void updateBook(@RequestBody Book newBook){
+        bookService.update(newBook);
     }
     
     @DeleteMapping("/delete/{bookId}")
     public void deleteBook(@PathVariable int bookId) {
-        bookRepository.deleteById(bookId);
+        bookService.delete(bookId);
     }
     
     @GetMapping("/getAll")
     public List<Book> getAll(){
-        return bookRepository.findAll();
+        return bookService.getAll();
     }
 
     @PostMapping("/add")
-    public void addBook(@RequestBody Book book){
-        bookRepository.save(book);
+    public void addBook(@RequestBody BookDTO book){
+        bookService.add(book);
     }
 }

@@ -1,7 +1,9 @@
 package com.turkcell.spring.intro.controllers;
 
+import com.turkcell.spring.intro.dtos.BorrowerDTO;
 import com.turkcell.spring.intro.entities.*;
 import com.turkcell.spring.intro.repositories.BorrowerRepository;
+import com.turkcell.spring.intro.services.abstracts.BorrowerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -12,37 +14,31 @@ import java.util.List;
 @RequestMapping("/api/borrower")
 @RequiredArgsConstructor
 public class BorrowerController {
-    private final BorrowerRepository borrowerRepository;
+    private final BorrowerService borrowerService;
     
     @GetMapping("/getById/{id}")
-    public ResponseEntity<Borrower> getById(@PathVariable int id){
-        Borrower borrower = borrowerRepository.findById(id).orElse(null);
-        
-        if (borrower == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-        else
-            return new ResponseEntity<>(borrower, HttpStatus.OK);
+    public Borrower getById(@PathVariable int id){
+        return borrowerService.getById(id);
     }
     
     @PutMapping("/update")
-    public Borrower updateBook(@RequestBody Borrower newBorrower){
-        return new ResponseEntity<>(borrowerRepository.save(newBorrower), HttpStatus.OK).getBody();
+    public void updateBorrower(@RequestBody Borrower newBorrower){
+       borrowerService.update(newBorrower);
     }
     
     @DeleteMapping("/delete/{borrowerId}")
-    public void deleteBook(@PathVariable int borrowerId) {
-        borrowerRepository.deleteById(borrowerId);
+    public void deleteBorrower(@PathVariable int borrowerId) {
+        borrowerService.delete(borrowerId);
     }
     
     
     @GetMapping("/getAll")
     public List<Borrower> getAll(){
-        return borrowerRepository.findAll();
+        return borrowerService.getAll();
     }
 
     @PostMapping("/add")
-    public void addBook(@RequestBody Borrower borrower){
-        borrowerRepository.save(borrower);
+    public void addBorrower(@RequestBody BorrowerDTO borrower){
+        borrowerService.add(borrower);
     }
 }

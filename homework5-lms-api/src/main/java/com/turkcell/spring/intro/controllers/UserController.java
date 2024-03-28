@@ -1,10 +1,9 @@
 package com.turkcell.spring.intro.controllers;
 
+import com.turkcell.spring.intro.dtos.UserDTO;
 import com.turkcell.spring.intro.entities.*;
-import com.turkcell.spring.intro.repositories.BookRepository;
-import com.turkcell.spring.intro.repositories.UserRepository;
+import com.turkcell.spring.intro.services.abstracts.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,36 +12,30 @@ import java.util.List;
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserRepository userRepository;
+    private final UserService userService;
     
     @GetMapping("/getById/{id}")
-    public ResponseEntity<User> getById(@PathVariable int id){
-        User user = userRepository.findById(id).orElse(null);
-        
-        if (user == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-        else
-            return new ResponseEntity<>(user, HttpStatus.OK);
+    public User getById(@PathVariable int id){
+        return userService.getById(id);
     }
     
     @PutMapping("/update")
-    public User updateBook(@RequestBody User newUser){
-        return new ResponseEntity<>(userRepository.save(newUser), HttpStatus.OK).getBody();
+    public void updateUser(@RequestBody User newUser){
+        userService.update(newUser);
     }
     
     @DeleteMapping("/delete/{userId}")
-    public void deleteBook(@PathVariable int userId) {
-        userRepository.deleteById(userId);
+    public void deleteUser(@PathVariable int userId) {
+        userService.delete(userId);
     }
 
     @GetMapping("/getAll")
     public List<User> getAll(){
-        return userRepository.findAll();
+        return userService.getAll();
     }
 
     @PostMapping("/add")
-    public void addBook(@RequestBody User user){
-        userRepository.save(user);
+    public void addUser(@RequestBody UserDTO user){
+        userService.add(user);
     }
 }
